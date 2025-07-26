@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MyApp.MainWindow"
+        Title="MyApp">
+ 
+        
+        
+    
+    
+    <Panel >
+
+        
+        <StackPanel Margin="20" x:Name="PageAlbums2" IsVisible="False" >
+            <Button x:Name="AlbumBack" Click="AlbumBack_OnClick" >Back</Button>
+            <TextBlock>Albums</TextBlock>
+            <ScrollViewer>
+            <ListBox x:Name="AlbumList"   />
+            </ScrollViewer>
+            <ButtonSpinner IsVisible="False" Name="VolumeSpinner"></ButtonSpinner>
+        </StackPanel>
+        
+        <StackPanel Margin="20" x:Name="PageVolumes1" IsVisible="False" >
+            <TextBlock>Select A folder</TextBlock>
+            <ListBox x:Name="VolumeList"  />
+            <Button x:Name="VolumeSubmit" Click="VolumeSubmit_OnClick" ></Button>
+        </StackPanel>
+        
+        
+        <StackPanel Margin="20" x:Name="PageLogin0"  IsVisible="False">
+          
+            <TextBlock Margin="0 5" >Server:</TextBlock>
+            <TextBox  Watermark="Enter your server address" Text="https://jellyfin.toastxc.xyz" x:Name="FormServer"/>
+            <TextBlock Margin="0 5" >Username:</TextBlock>
+            <TextBox  x:Name="FormUsername" Watermark="Enter your username"/>
+            <TextBlock Margin="0 5" >Password:</TextBlock>
+            <TextBox PasswordChar="*" Watermark="Enter your password"  x:Name="FormPassword" />
+            <Button Name="Login" Content="Login" Click="LoginClick"  />
+      
+            <!-- <Button Margin="0 20" Command="{Binding SubmitCommand}">Submit</Button> -->
+        </StackPanel>
+        
+    </Panel>
+    
+</Window >
+
+
