@@ -51,14 +51,19 @@ public partial class MainWindow : Window
     private async void LoginClick(object sender, RoutedEventArgs e)
     {
 
+        
         User = await api.Login.Req(FormServer.Text, FormUsername.Text, FormPassword.Text);
         await File.WriteAllTextAsync("user.json", JsonSerializer.Serialize(User));
 
+       
+        
         Volumes = await api.Volumes.Req(User, FormServer.Text);
         Volumes.Items = Volumes.Items.Where(i => i.CollectionType == "music").ToList();
         await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(Volumes));
-
-
+        var names = Volumes.Items.Select(item => item.Name).ToList();
+        VolumeList.ItemsSource = names;
+        Page = 1;
+        PageSelect();
     }
 
     private async void OnStart()
@@ -91,9 +96,11 @@ public partial class MainWindow : Window
 
         }
 
-        var names = Volumes.Items.Select(item => item.Name).ToList();
-
-        VolumeList.ItemsSource = names;
+     if (Page == 1)
+     {
+         var names = Volumes.Items.Select(item => item.Name).ToList();
+         VolumeList.ItemsSource = names;
+     }
 
 
 
