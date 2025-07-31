@@ -13,11 +13,11 @@ public class Volumes
 
 
     {
-        
+
         var client = new RestSharp.RestClient($"{url}/Users/{user.User.Id}/Items?SortBy=SortName%255E&SortOrder=Ascending%255E&IncludeItemTypes=MusicAlbum%255E&EnableImageTypes=Primary%252CBackdrop%252CBanner%252CThumb%255E");
         var request = new RestRequest("", Method.Get);
         request.AddHeader("authorization", $"MediaBrowser Client=\"Geeb\", Device=\"Linux\", DeviceId=\"23458723472389\", Version=\"10.10.3\", Token=\"{user.AccessToken}\"");
-        
+
         return JsonSerializer.Deserialize<Root>(client.Execute(request).Content);
 
     }
