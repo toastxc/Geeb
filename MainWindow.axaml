@@ -14,14 +14,19 @@
     <Panel >
         <!-- Albums -->
         <StackPanel Margin="20" x:Name="PageAlbums2" IsVisible="False" >
-         
+            
+            
             <TextBlock>Albums</TextBlock>
-            <ScrollViewer>
-                <StackPanel>
+            <StackPanel Orientation="Horizontal" Name="AlbumPanel">
                 <ListBox x:Name="AlbumList"   />
+                <!-- <TextBlock>hiiii</TextBlock> -->
+                <StackPanel Name="MediaPlayer">
+                    <TextBlock>HIIIIIIIIIIIIIIIIII</TextBlock>
                 </StackPanel>
-            </ScrollViewer>
+            </StackPanel>
             <Button Click="PageBack" >Back</Button>
+            <Button Name="ButtonMediaPlayer" Click="MediaPlayer_OnClick">MediaPlayer</Button>
+        
         </StackPanel>
         
         <!-- Volume list -->

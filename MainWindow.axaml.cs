@@ -30,6 +30,7 @@ public partial class MainWindow : Window
     private static api.Volumes.Root? Volumes = null;
     private static int Page = 0;
     private static api.Albums.Root Albums = null;
+    private static int? Player = null;
 
     public MainWindow()
     {
@@ -123,7 +124,7 @@ public partial class MainWindow : Window
         VolumeSpinner.IsActive = true;
         Console.WriteLine(VolumeList.SelectedIndex);
 
-        
+
         Albums = await api.Albums.Req(User, FormServer.Text, Volumes.Items[VolumeList.SelectedIndex].Id);
 
         AlbumList.ItemsSource = Albums.Items.Select(item => item.Name);
@@ -133,7 +134,7 @@ public partial class MainWindow : Window
         VolumeSpinner.IsVisible = false;
 
     }
-    
+
 
     private void PageBack(object? sender, RoutedEventArgs e)
     {
@@ -143,6 +144,38 @@ public partial class MainWindow : Window
 
     private void WindowBase_OnResized(object? sender, WindowResizedEventArgs e)
     {
+        PlayerResize();
+    }
+
+
+    private void PlayerResize()
+    {
+
         AlbumList.Height = Window.Height - 200;
+        if (Player != null)
+        {
+            MediaPlayer.IsVisible = true;
+            AlbumList.Width = Window.Width / 2;
+        }
+        else
+        {
+            MediaPlayer.IsVisible = false;
+            AlbumList.Width = Window.Width - 100;
+        }
+
+
+    }
+
+    private void MediaPlayer_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (Player != null)
+        {
+            Player = null;
+        }
+        else
+        {
+            Player = 1;
+        }
+        PlayerResize();
     }
 }
