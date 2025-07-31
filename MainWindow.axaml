@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MyApp.MainWindow"
+        xmlns:li="using:LoadingIndicators.Avalonia"
         Title="Geeb">
  
         
@@ -13,22 +14,27 @@
     <Panel >
         <!-- Albums -->
         <StackPanel Margin="20" x:Name="PageAlbums2" IsVisible="False" >
-            <Button Click="PageBack" >Back</Button>
+         
             <TextBlock>Albums</TextBlock>
             <ScrollViewer>
                 <StackPanel>
                 <ListBox x:Name="AlbumList"   />
                 </StackPanel>
             </ScrollViewer>
-            <ButtonSpinner IsVisible="False" Name="VolumeSpinner"></ButtonSpinner>
+            <Button Click="PageBack" >Back</Button>
         </StackPanel>
         
         <!-- Volume list -->
         <StackPanel Margin="20" x:Name="PageVolumes1" IsVisible="False" >
             <TextBlock>Select A folder</TextBlock>
-            <ListBox x:Name="VolumeList"  />
-            <Button x:Name="VolumeSubmit" Click="VolumeSubmit_OnClick" ></Button>
-            <Button Click="PageBack" >Back</Button>
+            <ListBox x:Name="VolumeList" SelectedIndex="0"  />
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="VolumeSubmit" Click="VolumeSubmit_OnClick" >Continue</Button>
+                <Button Click="PageBack" >Back</Button>
+                <!-- <Spinner IsVisible="True" Name="VolumeSpinner"></Spinner> -->
+                <li:LoadingIndicator IsActive="False" Name="VolumeSpinner" Mode="Arcs" SpeedRatio="1.2" />
+            </StackPanel>
+          
         </StackPanel>
         
         

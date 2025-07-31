@@ -19,6 +19,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Jellyfin.Sdk" Version="2025.7.24-unstable.202507240050" />
+    <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1" />
     <PackageReference Include="RestClient.Net" Version="6.0.0" />
     <PackageReference Include="RestSharp" Version="112.1.1-alpha.0.4" />
   </ItemGroup>

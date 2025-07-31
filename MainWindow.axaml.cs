@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -119,29 +120,24 @@ public partial class MainWindow : Window
     async private void VolumeSubmit_OnClick(object? sender, RoutedEventArgs e)
     {
 
+        VolumeSpinner.IsActive = true;
         Console.WriteLine(VolumeList.SelectedIndex);
 
-
-        VolumeSpinner.IsVisible = true;
-
+        
         Albums = await api.Albums.Req(User, FormServer.Text, Volumes.Items[VolumeList.SelectedIndex].Id);
-        // foreach (var album in Albums.Items)
-        // {
-        // AlbumList.Items.Append(album.Name);
-        // }
-
 
         AlbumList.ItemsSource = Albums.Items.Select(item => item.Name);
 
         Page = 2;
         PageSelect();
+        VolumeSpinner.IsVisible = false;
 
     }
-
+    
 
     private void PageBack(object? sender, RoutedEventArgs e)
     {
-        Page = Page - 1;
+        Page -= 1;
         PageSelect();
     }
 
