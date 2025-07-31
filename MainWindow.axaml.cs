@@ -35,7 +35,7 @@ public partial class MainWindow : Window
 
 
         InitializeComponent();
-     
+
         OnStart();
         Console.WriteLine($"start up finished, page: {Page}");
         PageSelect();
@@ -51,24 +51,24 @@ public partial class MainWindow : Window
     private async void LoginClick(object sender, RoutedEventArgs e)
     {
 
-        
+
         User = await api.Login.Req(FormServer.Text, FormUsername.Text, FormPassword.Text);
         await File.WriteAllTextAsync("user.json", JsonSerializer.Serialize(User));
 
-       
-        
+
+
         Volumes = await api.Volumes.Req(User, FormServer.Text);
         Volumes.Items = Volumes.Items.Where(i => i.CollectionType == "music").ToList();
         await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(Volumes));
-        var names = Volumes.Items.Select(item => item.Name).ToList();
-        VolumeList.ItemsSource = names;
+        VolumeList.ItemsSource = Volumes.Items.Select(item => item.Name).ToList();
+
         Page = 1;
         PageSelect();
     }
 
     private async void OnStart()
     {
-        
+
         if (!File.Exists("user.json"))
         {
             Page = 0;
@@ -96,11 +96,11 @@ public partial class MainWindow : Window
 
         }
 
-     if (Page == 1)
-     {
-         var names = Volumes.Items.Select(item => item.Name).ToList();
-         VolumeList.ItemsSource = names;
-     }
+        if (Page == 1)
+        {
+            var names = Volumes.Items.Select(item => item.Name).ToList();
+            VolumeList.ItemsSource = names;
+        }
 
 
 
@@ -118,30 +118,35 @@ public partial class MainWindow : Window
 
     async private void VolumeSubmit_OnClick(object? sender, RoutedEventArgs e)
     {
-      
+
         Console.WriteLine(VolumeList.SelectedIndex);
 
+
         VolumeSpinner.IsVisible = true;
-        Albums = await api.Albums.Req(User, FormServer.Text);
+
+        Albums = await api.Albums.Req(User, FormServer.Text, Volumes.Items[VolumeList.SelectedIndex].Id);
         // foreach (var album in Albums.Items)
         // {
-            // AlbumList.Items.Append(album.Name);
+        // AlbumList.Items.Append(album.Name);
         // }
 
-        
-        AlbumList.ItemsSource = Albums.Items.Select(item => item.Name );
-        
-      
-        
+
+        AlbumList.ItemsSource = Albums.Items.Select(item => item.Name);
+
         Page = 2;
         PageSelect();
-        
+
     }
 
 
-    private void AlbumBack_OnClick(object? sender, RoutedEventArgs e)
+    private void PageBack(object? sender, RoutedEventArgs e)
     {
-        Page = 1;
+        Page = Page - 1;
         PageSelect();
+    }
+
+    private void WindowBase_OnResized(object? sender, WindowResizedEventArgs e)
+    {
+        AlbumList.Height = Window.Height - 200;
     }
 }

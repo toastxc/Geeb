@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+<Window Resized="WindowBase_OnResized" Name="Window" xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,26 +11,29 @@
     
     
     <Panel >
-
-        
+        <!-- Albums -->
         <StackPanel Margin="20" x:Name="PageAlbums2" IsVisible="False" >
-            <Button x:Name="AlbumBack" Click="AlbumBack_OnClick" >Back</Button>
+            <Button Click="PageBack" >Back</Button>
             <TextBlock>Albums</TextBlock>
             <ScrollViewer>
-            <ListBox x:Name="AlbumList"   />
+                <StackPanel>
+                <ListBox x:Name="AlbumList"   />
+                </StackPanel>
             </ScrollViewer>
             <ButtonSpinner IsVisible="False" Name="VolumeSpinner"></ButtonSpinner>
         </StackPanel>
         
+        <!-- Volume list -->
         <StackPanel Margin="20" x:Name="PageVolumes1" IsVisible="False" >
             <TextBlock>Select A folder</TextBlock>
             <ListBox x:Name="VolumeList"  />
             <Button x:Name="VolumeSubmit" Click="VolumeSubmit_OnClick" ></Button>
+            <Button Click="PageBack" >Back</Button>
         </StackPanel>
         
         
+        <!-- Login Page -->
         <StackPanel Margin="20" x:Name="PageLogin0"  IsVisible="False">
-          
             <TextBlock Margin="0 5" >Server:</TextBlock>
             <TextBox  Watermark="Enter your server address" Text="https://jellyfin.toastxc.xyz" x:Name="FormServer"/>
             <TextBlock Margin="0 5" >Username:</TextBlock>
