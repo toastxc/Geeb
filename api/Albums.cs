@@ -9,25 +9,14 @@ namespace MyApp.api;
 public class Albums
 {
 
-    public static async Task<Root> Req(api.Login.Root user, string url)
+    public static async Task<Root> Req(api.Login.Root user, string url, string volume)
     {
 
-        var client = new RestSharp.RestClient($"{url}/Users/{user.User.Id}/Items?SortBy=SortName&SortOrder=Ascending&IncludeItemTypes=MusicAlbum&Recursive=true");
+        var client = new RestSharp.RestClient($"{url}/Users/{user.User.Id}/Items?SortBy=SortName&SortOrder=Ascending&IncludeItemTypes=MusicAlbum&Recursive=true&ParentId={volume}");
         var request = new RestRequest("", Method.Get);
-        request.AddHeader("user-agent", "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0");
-        request.AddHeader("accept", "application/json");
-        request.AddHeader("accept-language", "en-US,en;q=0.5");
-        request.AddHeader("accept-encoding", "gzip, deflate, br, zstd");
-        request.AddHeader("authorization", $"MediaBrowser Client=\"Jellyfin Web\", Device=\"Firefox\", DeviceId=\"TW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0OyBydjoxNDAuMCkgR2Vja28vMjAxMDAxMDEgRmlyZWZveC8xNDAuMHwxNzUyODMxNzc1MzAx\", Version=\"10.10.3\", Token=\"{user.AccessToken}\"");
-        request.AddHeader("dnt", "1");
-        request.AddHeader("sec-gpc", "1");
-        request.AddHeader("connection", "keep-alive");
-        request.AddHeader("sec-fetch-dest", "empty");
-        request.AddHeader("sec-fetch-mode", "cors");
-        request.AddHeader("sec-fetch-site", "same-origin");
-        request.AddHeader("priority", "u=4");
-        request.AddHeader("te", "trailers");
-        
+        request.AddHeader("authorization", $"MediaBrowser Client=\"Geeb\", Device=\"Linux\", DeviceId=\"23458723472389\", Version=\"10.10.3\", Token=\"{user.AccessToken}\"");
+
+
         return JsonSerializer.Deserialize<Root>(client.Execute(request).Content);
 
     }

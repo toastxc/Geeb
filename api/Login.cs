@@ -5,50 +5,24 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using RestSharp;
 
 namespace MyApp.api;
 
 public class Login
-
 {
     public static async Task<Root> Req(string server, string username, string password)
     {
 
-        var client = new HttpClient();
-        var request = new HttpRequestMessage
-            
-        {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri( server + "/Users/authenticatebyname"),
-            Headers =
-            {
-                { "accept", "application/json" },
-                { "accept-language", "en-GB,en-US;q=0.9,en;q=0.8" },
-                { "authorization", "MediaBrowser Client=\"Jellyfin Web\", Device=\"Chrome\", DeviceId=\"TW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTM3LjAuMC4wIFNhZmFyaS81MzcuMzZ8MTc1MDIzODQ2MTk3Nw11\", Version=\"10.10.3\"" },
-                { "origin", $"{server}" },
-                { "priority", "u=1, i" },
-                { "sec-ch-ua", "\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"" },
-                { "sec-ch-ua-mobile", "?0" },
-                { "sec-ch-ua-platform", "\"Linux\"" },
-                { "sec-fetch-dest", "empty" },
-                { "sec-fetch-mode", "cors" },
-                { "sec-fetch-site", "same-origin" },
-                { "user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" },
-            },
-            Content = new StringContent("{\"Username\":\""   + username +   "\",\"Pw\":\"" + password + "\"}")
-            {
-                Headers =
-                {
-                    ContentType = new MediaTypeHeaderValue("application/json")
-                }
-            }
-        };
-        using (var response = await client.SendAsync(request))
-        {
-            response.EnsureSuccessStatusCode();
 
-            return JsonSerializer.Deserialize<Root>(await response.Content.ReadAsStringAsync());
-        }
+        var client = new RestSharp.RestClient("https://jellyfin.toastxc.xyz/Users/authenticatebyname");
+        var request = new RestRequest("", Method.Post);
+        request.AddHeader("authorization", $"MediaBrowser Client=\"Geeb\", Device=\"Linux\", DeviceId=\"23458723472389\", Version=\"10.10.3\"");
+
+        request.AddParameter("application/json", "{\"Username\":\"" + username + "\",\"Pw\":\"" + password + "\"}", ParameterType.RequestBody);
+        // var response = client.Execute(request);
+        return JsonSerializer.Deserialize<Root>(client.Execute(request).Content);
+
 
     }
     public class Capabilities
