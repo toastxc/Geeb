@@ -26,11 +26,13 @@ public partial class MainWindow : Window
 
 
 {
-    private static api.Login.Root? User = null; // Modifiable
-    private static api.Volumes.Root? Volumes = null;
-    private static int Page = 0;
-    private static api.Albums.Root Albums = null;
-    private static int? Player = null;
+    private api.Login.Root? _user = null; // Modifiable
+    private api.Volumes.Root? _volumes = null;
+    private int _page = 0;
+    private api.Albums.Root? _albums = null;
+    private int? _player = null;
+    private api.Album.Root? _album = null;
+
 
     public MainWindow()
     {
@@ -39,7 +41,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         OnStart();
-        Console.WriteLine($"start up finished, page: {Page}");
+        Console.WriteLine($"start up finished, page: {_page}");
         PageSelect();
 
 
@@ -50,17 +52,17 @@ public partial class MainWindow : Window
     {
 
 
-        User = await api.Login.Req(FormServer.Text, FormUsername.Text, FormPassword.Text);
-        await File.WriteAllTextAsync("user.json", JsonSerializer.Serialize(User));
+        _user = await api.Login.Req(FormServer.Text, FormUsername.Text, FormPassword.Text);
+        await File.WriteAllTextAsync("user.json", JsonSerializer.Serialize(_user));
 
 
 
-        Volumes = await api.Volumes.Req(User, FormServer.Text);
-        Volumes.Items = Volumes.Items.Where(i => i.CollectionType == "music").ToList();
-        await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(Volumes));
-        VolumeList.ItemsSource = Volumes.Items.Select(item => item.Name).ToList();
+        _volumes = await api.Volumes.Req(_user, FormServer.Text);
+        _volumes.Items = _volumes.Items.Where(i => i.CollectionType == "music").ToList();
+        await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(_volumes));
+        VolumeList.ItemsSource = _volumes.Items.Select(item => item.Name).ToList();
 
-        Page = 1;
+        _page = 1;
         PageSelect();
     }
 
@@ -69,24 +71,24 @@ public partial class MainWindow : Window
 
         if (!File.Exists("user.json"))
         {
-            Page = 0;
+            _page = 0;
 
         }
         else
         {
-            Page = 1;
-            User = JsonSerializer.Deserialize<api.Login.Root>(File.ReadAllText("user.json"));
+            _page = 1;
+            _user = JsonSerializer.Deserialize<api.Login.Root>(File.ReadAllText("user.json"));
         }
 
         switch (File.Exists("user.json"), File.Exists("volumes.json"))
         {
             case (_, true):
-                Volumes = JsonSerializer.Deserialize<api.Volumes.Root>(File.ReadAllText("volumes.json"));
+                _volumes = JsonSerializer.Deserialize<api.Volumes.Root>(File.ReadAllText("volumes.json"));
                 break;
             case (true, false):
-                Volumes = await api.Volumes.Req(User, FormServer.Text);
-                Volumes.Items = Volumes.Items.Where(i => i.CollectionType == "music").ToList();
-                await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(Volumes));
+                _volumes = await api.Volumes.Req(_user, FormServer.Text);
+                _volumes.Items = _volumes.Items.Where(i => i.CollectionType == "music").ToList();
+                await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(_volumes));
                 break;
             case (false, false):
                 break;
@@ -94,9 +96,9 @@ public partial class MainWindow : Window
 
         }
 
-        if (Page == 1)
+        if (_page == 1)
         {
-            var names = Volumes.Items.Select(item => item.Name).ToList();
+            var names = _volumes.Items.Select(item => item.Name).ToList();
             VolumeList.ItemsSource = names;
         }
 
@@ -109,9 +111,9 @@ public partial class MainWindow : Window
 
     private void PageSelect()
     {
-        PageLogin0.IsVisible = Page == 0;
-        PageVolumes1.IsVisible = Page == 1;
-        PageAlbums2.IsVisible = Page == 2;
+        PageLogin0.IsVisible = _page == 0;
+        PageVolumes1.IsVisible = _page == 1;
+        PageAlbums2.IsVisible = _page == 2;
     }
 
     async private void VolumeSubmit_OnClick(object? sender, RoutedEventArgs e)
@@ -121,11 +123,11 @@ public partial class MainWindow : Window
         Console.WriteLine(VolumeList.SelectedIndex);
 
 
-        Albums = await api.Albums.Req(User, FormServer.Text, Volumes.Items[VolumeList.SelectedIndex].Id);
+        _albums = await api.Albums.Req(_user, FormServer.Text, _volumes.Items[VolumeList.SelectedIndex].Id);
 
-        AlbumList.ItemsSource = Albums.Items.Select(item => item.Name);
+        AlbumList.ItemsSource = _albums.Items.Select(item => item.Name);
 
-        Page = 2;
+        _page = 2;
         PageSelect();
         VolumeSpinner.IsVisible = false;
 
@@ -134,7 +136,7 @@ public partial class MainWindow : Window
 
     private void PageBack(object? sender, RoutedEventArgs e)
     {
-        Page -= 1;
+        _page -= 1;
         PageSelect();
     }
 
@@ -148,9 +150,9 @@ public partial class MainWindow : Window
     {
 
         Console.WriteLine(Window.Width);
-        MediaPlayer.IsVisible = Player != null;
+        MediaPlayer.IsVisible = _player != null;
 
-        switch (Window.Width > 600, Player != null)
+        switch (Window.Width > 600, _player != null)
         {
 
             // big screen and player
@@ -179,13 +181,13 @@ public partial class MainWindow : Window
 
     private void MediaPlayer_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (Player != null)
+        if (_player != null)
         {
-            Player = null;
+            _player = null;
         }
         else
         {
-            Player = 1;
+            _player = 1;
         }
         PlayerResize();
     }
