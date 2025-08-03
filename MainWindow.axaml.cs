@@ -45,10 +45,6 @@ public partial class MainWindow : Window
 
 
 
-        // VolumeList.ItemsSource = new string[]
-        //         {"cat", "camel", "cow", "chameleon", "mouse", "lion", "zebra" }
-        //     .OrderBy(x => x);
-
     }
     private async void LoginClick(object sender, RoutedEventArgs e)
     {
@@ -153,42 +149,33 @@ public partial class MainWindow : Window
 
         Console.WriteLine(Window.Width);
         MediaPlayer.IsVisible = Player != null;
-        
+
         switch (Window.Width > 600, Player != null)
         {
-               
+
             // big screen and player
             case (true, true):
                 AlbumList.IsVisible = true;
-                MediaPlayer.Width = Window.Width / 2; 
-                AlbumList.Width = Window.Width / 2; 
+                MediaPlayer.Width = Window.Width / 2;
+                AlbumList.Width = Window.Width / 2;
                 break;
             // small screen and player
             case (false, true):
                 AlbumList.IsVisible = false;
-                MediaPlayer.Width = Window.Width - 100; 
+                MediaPlayer.Width = Window.Width - 100;
                 break;
             // small screen and no player
             case (_, false):
                 AlbumList.IsVisible = true;
-                AlbumList.Width = Window.Width - 100; 
+                AlbumList.Width = Window.Width - 100;
                 break;
-          
+
         }
         AlbumList.Height = Window.Height - 200;
-        // if (Player != null)
-        // {
-        //     MediaPlayer.IsVisible = true;
-        //     AlbumList.Width = Window.Width / 2;
-        // }
-        // else
-        // {
-        //     MediaPlayer.IsVisible = false;
-        //     AlbumList.Width = Window.Width - 100;
-        }
+    }
 
 
-    
+
 
     private void MediaPlayer_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -202,4 +189,5 @@ public partial class MainWindow : Window
         }
         PlayerResize();
     }
+
 }

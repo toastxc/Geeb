@@ -15,8 +15,6 @@ public class Albums
         var client = new RestSharp.RestClient($"{url}/Users/{user.User.Id}/Items?SortBy=SortName&SortOrder=Ascending&IncludeItemTypes=MusicAlbum&Recursive=true&ParentId={volume}");
         var request = new RestRequest("", Method.Get);
         request.AddHeader("authorization", $"MediaBrowser Client=\"Geeb\", Device=\"Linux\", DeviceId=\"23458723472389\", Version=\"10.10.3\", Token=\"{user.AccessToken}\"");
-
-
         return JsonSerializer.Deserialize<Root>(client.Execute(request).Content);
 
     }
