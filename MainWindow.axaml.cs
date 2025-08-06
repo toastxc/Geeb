@@ -222,7 +222,7 @@ public partial class MainWindow : Window
         var album = _albums.Items[AlbumList.SelectedIndex];
 
 
-        _mediaPlayer.PlayQueue = await api.PlayQueue.Req(_user, " ", album.Id);
+        _mediaPlayer.PlayQueue = await api.PlayQueue.Req(_user, _server, album.Id);
         MpTitle.Text = album.AlbumArtist;
         MpArtists.Text = string.Join(", ", album.Artists.ToArray());
         MpQueue.Children.Clear();
