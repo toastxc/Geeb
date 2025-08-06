@@ -18,14 +18,34 @@
             
             <TextBlock>Albums</TextBlock>
             <StackPanel Orientation="Horizontal" Name="AlbumPanel">
-                <ListBox x:Name="AlbumList"   />
-                <!-- <TextBlock>hiiii</TextBlock> -->
-                <StackPanel Name="MediaPlayer">
-                    <TextBlock>HIIIIIIIIIIIIIIIIII</TextBlock>
+                <!-- Album list -->
+                <ListBox x:Name="AlbumList" SelectionChanged="AlbumList_OnSelectionChanged"  />
+             
+                <!-- Media player -->
+                <StackPanel Name="StackPanelMediaPlayer">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock>Title: </TextBlock>
+                        <TextBlock Name="MpTitle"></TextBlock>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock>Title: </TextBlock>
+                        <TextBlock Name="MpArtists"></TextBlock>
+                        <StackPanel Name="MpQueue"/>
+                    </StackPanel>
+                    
+         
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <Button Name="MpPause" Click="MpStopStart_OnClick">⏵</Button>
+                    <Button Name="MpStop" Click="MpStop_OnClick">⏹</Button>
+                    <Button Name="MpSkip" Click="MpSkip_OnClick" >⏭</Button>
+                    <Button Name="MpSkipBack" Click="MpSkipBack_OnClick" >⏮</Button>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
             <Button Click="PageBack" >Back</Button>
             <Button Name="ButtonMediaPlayer" Click="MediaPlayer_OnClick">MediaPlayer</Button>
+            
         
         </StackPanel>
         
