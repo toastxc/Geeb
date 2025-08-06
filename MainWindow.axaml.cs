@@ -17,12 +17,25 @@ using Avalonia.Interactivity;
 using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Kiota.Abstractions;
 using MyApp.api;
+using System.Media;
+using LibVLCSharp.Shared;
 
 namespace MyApp;
 
 
+class CMediaPlayer
+{
+    public api.PlayQueue.Root? PlayQueue { get; set; } = null;
+    public int PlayPosition = 0;
+    public bool IsOpen { get; set; } = false;
+    public MediaPlayer? Vlc { get; set; } = null;
+
+}
+
 
 public partial class MainWindow : Window
+
+
 
 
 {
@@ -31,7 +44,9 @@ public partial class MainWindow : Window
     private int _page = 0;
     private api.Albums.Root? _albums = null;
     private int? _player = null;
-    private api.Album.Root? _album = null;
+    private CMediaPlayer _mediaPlayer = new CMediaPlayer();
+    private string? _server = null;
+
 
 
     public MainWindow()
@@ -51,17 +66,17 @@ public partial class MainWindow : Window
     private async void LoginClick(object sender, RoutedEventArgs e)
     {
 
-
         _user = await api.Login.Req(FormServer.Text, FormUsername.Text, FormPassword.Text);
         await File.WriteAllTextAsync("user.json", JsonSerializer.Serialize(_user));
-
+        _server = FormServer.Text;
+        Console.WriteLine(_server);
+        await File.WriteAllTextAsync(".server", _server);
 
 
         _volumes = await api.Volumes.Req(_user, FormServer.Text);
         _volumes.Items = _volumes.Items.Where(i => i.CollectionType == "music").ToList();
         await File.WriteAllTextAsync("volumes.json", JsonSerializer.Serialize(_volumes));
         VolumeList.ItemsSource = _volumes.Items.Select(item => item.Name).ToList();
-
         _page = 1;
         PageSelect();
     }
@@ -78,6 +93,8 @@ public partial class MainWindow : Window
         {
             _page = 1;
             _user = JsonSerializer.Deserialize<api.Login.Root>(File.ReadAllText("user.json"));
+            _server = File.ReadAllText(".server");
+
         }
 
         switch (File.Exists("user.json"), File.Exists("volumes.json"))
@@ -125,6 +142,7 @@ public partial class MainWindow : Window
 
         _albums = await api.Albums.Req(_user, FormServer.Text, _volumes.Items[VolumeList.SelectedIndex].Id);
 
+        await File.WriteAllTextAsync("albums.json", JsonSerializer.Serialize(_albums));
         AlbumList.ItemsSource = _albums.Items.Select(item => item.Name);
 
         _page = 2;
@@ -150,7 +168,7 @@ public partial class MainWindow : Window
     {
 
         Console.WriteLine(Window.Width);
-        MediaPlayer.IsVisible = _player != null;
+        StackPanelMediaPlayer.IsVisible = _player != null;
 
         switch (Window.Width > 600, _player != null)
         {
@@ -158,13 +176,13 @@ public partial class MainWindow : Window
             // big screen and player
             case (true, true):
                 AlbumList.IsVisible = true;
-                MediaPlayer.Width = Window.Width / 2;
+                StackPanelMediaPlayer.Width = Window.Width / 2;
                 AlbumList.Width = Window.Width / 2;
                 break;
             // small screen and player
             case (false, true):
                 AlbumList.IsVisible = false;
-                MediaPlayer.Width = Window.Width - 100;
+                StackPanelMediaPlayer.Width = Window.Width - 100;
                 break;
             // small screen and no player
             case (_, false):
@@ -192,4 +210,142 @@ public partial class MainWindow : Window
         PlayerResize();
     }
 
+    private void AlbumList_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+
+        UpdateMediaPlayer();
+    }
+
+    async private void UpdateMediaPlayer()
+    {
+
+        var album = _albums.Items[AlbumList.SelectedIndex];
+
+
+        _mediaPlayer.PlayQueue = await api.PlayQueue.Req(_user, " ", album.Id);
+        MpTitle.Text = album.AlbumArtist;
+        MpArtists.Text = string.Join(", ", album.Artists.ToArray());
+        MpQueue.Children.Clear();
+        foreach (var item in _mediaPlayer.PlayQueue.Items)
+        {
+            MpQueue.Children.Add(new TextBlock() { Text = item.Name });
+        }
+    }
+
+
+    async private void music_init()
+    {
+
+        Console.WriteLine("start");
+        Console.WriteLine("vlc null");
+        MpPause.Content = "⌛";
+
+        if (!Directory.Exists("songs"))
+        {
+            Directory.CreateDirectory("songs");
+        }
+        var id = _mediaPlayer.PlayQueue.Items[_mediaPlayer.PlayPosition].Id;
+        Console.WriteLine();
+        var song_path = $"songs/{id}.flac";
+
+        if (!File.Exists(song_path))
+        {
+            File.WriteAllBytes($"songs/{id}.flac", await api.Flac.Req(_user, id, _server));
+        }
+
+
+        _mediaPlayer.Vlc = new MediaPlayer(new Media(new LibVLC(enableDebugLogs: false), new Uri($"/home/kaiaxc/projects/MyApp/bin/Debug/net9.0/songs/{id}.flac")));
+        MpPause.Content = "⏸";
+        await Task.Run(() =>
+        {
+            _mediaPlayer.Vlc.Play();
+            while (_mediaPlayer.Vlc.WillPlay)
+            {
+            }
+            
+
+            Console.WriteLine("fin!");
+        });
+        Console.WriteLine("fin! 2");
+    }
+
+    private void MpStopStart_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_mediaPlayer.Vlc == null)
+        {
+            music_init();
+
+        }
+        else if (_mediaPlayer.Vlc.CanPause)
+        {
+
+            if (_mediaPlayer.Vlc.IsPlaying)
+            {
+                MpPause.Content = "⏵";
+            }
+            else
+            {
+                MpPause.Content = "⏸";
+            }
+            _mediaPlayer.Vlc.Pause();
+        }
+        else
+        {
+            Console.WriteLine("MP: exception");
+        }
+
+    }
+
+    private void MpStop_OnClick(object? sender, RoutedEventArgs e)
+    {
+        stop();
+
+    }
+
+    private void stop()
+    {
+        if (_mediaPlayer.Vlc is { WillPlay: true })
+        {
+            _mediaPlayer.Vlc.Stop();
+            _mediaPlayer.Vlc = null;
+            MpPause.Content = "⏵";
+        }
+    }
+    private void MpSkip_OnClick(object? sender, RoutedEventArgs e)
+    {
+
+
+      SkipForward();
+
+
+
+
+    }
+
+    private void SkipForward()
+    {
+        if (_mediaPlayer.PlayPosition + 1 < _mediaPlayer.PlayQueue.Items.Count)
+        {
+            stop();
+            _mediaPlayer.PlayPosition += 1;
+            music_init();
+        }
+    }
+
+    private void MpSkipBack_OnClick(object? sender, RoutedEventArgs e)
+    {
+
+        if (_mediaPlayer.PlayPosition > 0)
+        {
+            stop();
+            _mediaPlayer.PlayPosition -= 1;
+            music_init();
+        }
+
+
+
+    }
 }
+
+
+
