@@ -233,7 +233,7 @@ public partial class MainWindow : Window
     }
 
 
-    async private void music_init()
+    async private Task music_init()
     {
 
         Console.WriteLine("start");
@@ -264,16 +264,21 @@ public partial class MainWindow : Window
             }
             
 
+           
             Console.WriteLine("fin!");
         });
+       
+        
         Console.WriteLine("fin! 2");
     }
 
-    private void MpStopStart_OnClick(object? sender, RoutedEventArgs e)
+    private async void MpStopStart_OnClick(object? sender, RoutedEventArgs e)
     {
+        
         if (_mediaPlayer.Vlc == null)
         {
-            music_init();
+            await music_init();
+            stop();
 
         }
         else if (_mediaPlayer.Vlc.CanPause)
@@ -304,7 +309,7 @@ public partial class MainWindow : Window
 
     private void stop()
     {
-        if (_mediaPlayer.Vlc is { WillPlay: true })
+        if (_mediaPlayer.Vlc != null) 
         {
             _mediaPlayer.Vlc.Stop();
             _mediaPlayer.Vlc = null;
