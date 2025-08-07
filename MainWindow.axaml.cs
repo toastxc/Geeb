@@ -212,7 +212,7 @@ public partial class MainWindow : Window
 
     private void AlbumList_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-
+        _mediaPlayer.PlayPosition = 0;
         UpdateMediaPlayer();
     }
 
@@ -242,6 +242,7 @@ public partial class MainWindow : Window
         {
             Directory.CreateDirectory("songs");
         }
+        // Console.WriteLine(_mediaPlayer.PlayPosition);
         var id = _mediaPlayer.PlayQueue.Items[_mediaPlayer.PlayPosition].Id;
 
         var song_path = $"songs/{id}.flac";
