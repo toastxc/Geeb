@@ -56,7 +56,6 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         OnStart();
-        Console.WriteLine($"start up finished, page: {_page}");
         PageSelect();
 
 
@@ -137,7 +136,8 @@ public partial class MainWindow : Window
     {
 
         VolumeSpinner.IsActive = true;
-        Console.WriteLine(VolumeList.SelectedIndex);
+
+
 
 
         _albums = await api.Albums.Req(_user, FormServer.Text, _volumes.Items[VolumeList.SelectedIndex].Id);
@@ -232,12 +232,10 @@ public partial class MainWindow : Window
         }
     }
 
-
     async private Task music_init()
     {
 
-        Console.WriteLine("start");
-        Console.WriteLine("vlc null");
+        MpButtons.IsEnabled = false;
         MpPause.Content = "⌛";
 
         if (!Directory.Exists("songs"))
@@ -245,7 +243,7 @@ public partial class MainWindow : Window
             Directory.CreateDirectory("songs");
         }
         var id = _mediaPlayer.PlayQueue.Items[_mediaPlayer.PlayPosition].Id;
-        Console.WriteLine();
+
         var song_path = $"songs/{id}.flac";
 
         if (!File.Exists(song_path))
@@ -256,29 +254,29 @@ public partial class MainWindow : Window
 
         _mediaPlayer.Vlc = new MediaPlayer(new Media(new LibVLC(enableDebugLogs: false), new Uri($"/home/kaiaxc/projects/MyApp/bin/Debug/net9.0/songs/{id}.flac")));
         MpPause.Content = "⏸";
+        MpButtons.IsEnabled = true;
         await Task.Run(() =>
         {
             _mediaPlayer.Vlc.Play();
+        
             while (_mediaPlayer.Vlc.WillPlay)
             {
             }
-            
 
-           
-            Console.WriteLine("fin!");
         });
-       
-        
-        Console.WriteLine("fin! 2");
+      
     }
 
     private async void MpStopStart_OnClick(object? sender, RoutedEventArgs e)
     {
+    
         
         if (_mediaPlayer.Vlc == null)
         {
             await music_init();
+           
             stop();
+            
 
         }
         else if (_mediaPlayer.Vlc.CanPause)
@@ -298,7 +296,7 @@ public partial class MainWindow : Window
         {
             Console.WriteLine("MP: exception");
         }
-
+    
     }
 
     private void MpStop_OnClick(object? sender, RoutedEventArgs e)
@@ -309,7 +307,7 @@ public partial class MainWindow : Window
 
     private void stop()
     {
-        if (_mediaPlayer.Vlc != null) 
+        if (_mediaPlayer.Vlc != null)
         {
             _mediaPlayer.Vlc.Stop();
             _mediaPlayer.Vlc = null;
@@ -320,7 +318,8 @@ public partial class MainWindow : Window
     {
 
 
-      SkipForward();
+      
+        SkipForward();
 
 
 

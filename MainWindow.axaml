@@ -35,12 +35,12 @@
                     </StackPanel>
                     
          
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                      <Button Name="MpPause" Click="MpStopStart_OnClick">⏵</Button>
-                    <Button Name="MpStop" Click="MpStop_OnClick">⏹</Button>
-                    <Button Name="MpSkip" Click="MpSkip_OnClick" >⏭</Button>
-                    <Button Name="MpSkipBack" Click="MpSkipBack_OnClick" >⏮</Button>
-                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="10" Name="MpButtons">
+                        <Button Name="MpPause" Click="MpStopStart_OnClick">⏵</Button>
+                        <Button Name="MpStop" Click="MpStop_OnClick">⏹</Button>
+                        <Button Name="MpSkip" Click="MpSkip_OnClick" >⏭</Button>
+                        <Button Name="MpSkipBack" Click="MpSkipBack_OnClick" >⏮</Button>
+                        </StackPanel>
                 </StackPanel>
             </StackPanel>
             <Button Click="PageBack" >Back</Button>
