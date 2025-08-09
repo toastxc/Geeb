@@ -232,7 +232,7 @@ public partial class MainWindow : Window
         }
     }
 
-    async private Task music_init()
+    private async Task<bool> music_init()
     {
 
         MpButtons.IsEnabled = false;
@@ -253,31 +253,82 @@ public partial class MainWindow : Window
         }
 
 
-        _mediaPlayer.Vlc = new MediaPlayer(new Media(new LibVLC(enableDebugLogs: false), new Uri($"/home/kaiaxc/projects/MyApp/bin/Debug/net9.0/songs/{id}.flac")));
+
+        _mediaPlayer.Vlc = new MediaPlayer(new Media(new LibVLC(enableDebugLogs: false),
+                new Uri($"/home/kaiaxc/projects/MyApp/bin/Debug/net9.0/songs/{id}.flac")));
+
+
         MpPause.Content = "⏸";
         MpButtons.IsEnabled = true;
         await Task.Run(() =>
         {
+
             _mediaPlayer.Vlc.Play();
-        
+
+
+
+
+
             while (_mediaPlayer.Vlc.WillPlay)
             {
+
+
             }
 
         });
-      
+
+
+        if (_mediaPlayer.Vlc != null && _mediaPlayer.Vlc.Position > 0.888)
+        {
+            return true;
+        }
+
+
+        if (_mediaPlayer.Vlc != null)
+        {
+            Console.WriteLine(_mediaPlayer.Vlc.Position);
+        }
+        return false;
     }
 
+
+    private async Task play()
+    {
+        while (true)
+        {
+            // if song didnt run all the way through
+            var dnf = await music_init();
+            MpPause.Content = "⏸";
+            if (!dnf)
+            {
+                Console.WriteLine("ran out");
+                stop();
+                break;
+
+            }
+
+            // if no more songs in queue 
+            if (_mediaPlayer.PlayPosition + 1 == _mediaPlayer.PlayQueue.Items.Count)
+            {
+                stop();
+                _mediaPlayer.PlayPosition = 0;
+                break;
+
+            }
+            _mediaPlayer.PlayPosition += 1;
+        }
+    }
     private async void MpStopStart_OnClick(object? sender, RoutedEventArgs e)
     {
-    
-        
+
+
         if (_mediaPlayer.Vlc == null)
         {
-            await music_init();
-           
-            stop();
-            
+
+            await play();
+
+
+
 
         }
         else if (_mediaPlayer.Vlc.CanPause)
@@ -297,7 +348,7 @@ public partial class MainWindow : Window
         {
             Console.WriteLine("MP: exception");
         }
-    
+
     }
 
     private void MpStop_OnClick(object? sender, RoutedEventArgs e)
@@ -312,44 +363,40 @@ public partial class MainWindow : Window
         {
             _mediaPlayer.Vlc.Stop();
             _mediaPlayer.Vlc = null;
-            MpPause.Content = "⏵";
+
         }
+        MpPause.Content = "⏵";
     }
-    private void MpSkip_OnClick(object? sender, RoutedEventArgs e)
+    private async void MpSkip_OnClick(object? sender, RoutedEventArgs e)
     {
 
 
-      
-        SkipForward();
-
-
-
-
-    }
-
-    private void SkipForward()
-    {
         if (_mediaPlayer.PlayPosition + 1 < _mediaPlayer.PlayQueue.Items.Count)
         {
             stop();
             _mediaPlayer.PlayPosition += 1;
-            music_init();
+            await play();
         }
+
+
+
     }
 
-    private void MpSkipBack_OnClick(object? sender, RoutedEventArgs e)
+    private async void MpSkipBack_OnClick(object? sender, RoutedEventArgs e)
     {
 
         if (_mediaPlayer.PlayPosition > 0)
         {
             stop();
             _mediaPlayer.PlayPosition -= 1;
-            music_init();
+            await play();
         }
 
 
 
     }
+
+
 }
 
 
