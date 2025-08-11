@@ -219,6 +219,11 @@ public partial class MainWindow : Window
     async private void UpdateMediaPlayer()
     {
 
+        if (_page != 2)
+        {
+            return;
+        }
+        
         var album = _albums.Items[AlbumList.SelectedIndex];
 
 
